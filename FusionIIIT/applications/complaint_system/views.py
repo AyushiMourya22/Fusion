@@ -289,6 +289,8 @@ def check(request):
             return HttpResponseRedirect('/complaint/caretaker/')
         elif b.user_type == 'faculty':
             return HttpResponseRedirect('/complaint/supervisor/')
+        # elif temp.user_type == 'fx':
+        #    return HttpResponseRedirect('/complaint/supervisor/')
         else:
             return HttpResponse("<h1>wrong user credentials</h1>")
     else:

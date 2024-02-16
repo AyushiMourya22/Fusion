@@ -38,7 +38,7 @@ Complaint
              style="max-width: 320px;">
 
             <a class="active item" data-tab="first">
-                Assign Workers / Redirect
+                Redirect
                 <i class="right floated chevron right icon"></i>
             </a>
 
@@ -54,15 +54,15 @@ Complaint
         <div class="ui active tab segment" data-tab="first">
 
             <div class="ui pointing secondary menu ">
-                <a class="active item" data-tab="feedback">
+                <!-- <a class="active item" data-tab="feedback">
                     Assign Worker
-                </a>
-                <a class="item" data-tab="redirect">
+                </a> -->
+                <a class="active item" data-tab="redirect">
                     Redirect
                 </a>
             </div>
 
-            <div class="ui active tab large" data-tab="feedback">
+            <!-- <div class="ui active tab large" data-tab="feedback">
                 <div class="ui vertical segment">
                     <form method="post" action=".">
                         {% csrf_token %}
@@ -159,13 +159,13 @@ Complaint
                 <br>
 
 
-            </div>
+            </div> -->
 
 <!-- redirect complaint -->
-            <div class="ui tab large" data-tab="redirect">
+            <div class="ui active tab large" data-tab="redirect">
                 <div class="ui vertical segment" style="padding:40px">
-                    <h4>If you think that this complaint does not belong to you .</br>
-                        You a can pass this complaint to required caretaker .</h4>
+                    <h4>If you think that this complaint does not belong to you ,</br>
+                        you can pass this complaint to required supervisor .</h4>
                     <form method="post" action=".">
                         {% csrf_token %}
                         <div class="ui header">
@@ -204,7 +204,7 @@ Complaint
                                     <span style="color: red;">declined</span> this complaint.
                                     .</H3>
                                 {% else %}
-                                <label>Choose particular caretaker from a drop down box :</label>
+                                <label>Choose particular supervisor from a drop down box :</label>
                                 <select name="assign_caretaker">
                                     {% if total_caretakers_in_area %}
                                     {% for i in total_caretakers_in_area %}
