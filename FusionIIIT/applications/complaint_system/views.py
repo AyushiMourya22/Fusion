@@ -12,6 +12,11 @@ from applications.globals.models import User , ExtraInfo, HoldsDesignation
 from notifications.models import Notification
 from .models import Caretaker, StudentComplain, Supervisor, Workers
 from notification.views import  complaint_system_notif
+
+
+# from applications.filetracking.sdk.methods import *
+
+
 #function for reassign to another worker
 @login_required
 def complaint_reassign(request,wid,iid):
@@ -362,7 +367,7 @@ def user(request):
             complaint_finish = datetime.now() + timedelta(days=4)
         elif comp_type == 'other':
             complaint_finish = datetime.now() + timedelta(days=3)
-        y = ExtraInfo.objects.all().select_related('user','department').get(id=comp_id)
+        # y = ExtraInfo.objects.all().get(id=comp_id)
         #check if location given
         if location!="":
             # x = StudentComplain(complainer=y,
@@ -376,6 +381,8 @@ def user(request):
             
             
             # x.save()
+            user_details=User.objects.get(id=y.user_id)
+
             obj1, created = StudentComplain.objects.get_or_create(complainer=y,
                                 complaint_type=comp_type,
                                 location=location,
@@ -385,7 +392,8 @@ def user(request):
                                 complaint_finish=complaint_finish,
                                 upload_complaint=comp_file)
 
-            
+
+        
         historytemp = StudentComplain.objects.select_related('complainer','complainer__user','complainer__department','worker_id','worker_id__caretaker_id__staff_id','worker_id__caretaker_id__staff_id__user','worker_id__caretaker_id__staff_id__department').filter(complainer=y).order_by('-id')
         history = []
         j = 1
@@ -433,6 +441,16 @@ def user(request):
         caretaker_name = HoldsDesignation.objects.select_related('user','working','designation').get(designation__name = dsgn)
     
 
+        # file_id = create_file(uploader=user_details.username, 
+        # uploader_designation=obj1.user_type, 
+        # receiver=caretaker_name.user.username,
+        # receiver_designation=caretaker_name.designation, 
+        # src_module="complaint", 
+        # src_object_id= str(obj1.id), 
+        # file_extra_JSON= {}, 
+        # attached_file = None)
+            
+
         # This is to allow the student
         student = 1
         message = "A New Complaint has been lodged"
@@ -443,6 +461,23 @@ def user(request):
         # next = request.POST.get('next', '/')
 
         messages.success(request,message)
+
+        # file_details_dict = view_file(file_id=file_id)
+
+        # forwarded_file_id = forward_file(
+        #     file_id=file_id,
+        #     receiver=caretaker_name.user.username,
+        #     receiver_designation=caretaker_name.designation,
+        #     file_extra_JSON={"key": "value"},
+        #     remarks="Forwarding to 21BCS078", 
+        #     attached_file=None,
+        #     )
+        # outbox_files = view_outbox(
+        #     username=user_details.username,
+        #     designation=obj1.user_type,
+        #     src_module="complaint"
+        # )
+
         return HttpResponseRedirect('/complaint/user')
 
     else:
@@ -450,6 +485,14 @@ def user(request):
         y = ExtraInfo.objects.all().select_related('user','department').filter(user=a).first()
         historytemp = StudentComplain.objects.select_related('complainer','complainer__user','complainer__department','worker_id','worker_id__caretaker_id__staff_id','worker_id__caretaker_id__staff_id__user','worker_id__caretaker_id__staff_id__department').filter(complainer=y).order_by('-id')
         history=[]
+        user_details=User.objects.get(id=y.user_id)
+
+        # inbox_files = view_inbox(
+        #     username=user_details.username,
+        #     designation=y.user_type,
+        #     src_module="complaint"
+        # )
+        # print(inbox_files)
 
         notification = Notification.objects.filter(recipient=a.id)
         notification = notification.filter(data__exact={'url':'complaint:detail','module':'Complaint System'})

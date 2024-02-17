@@ -311,4 +311,45 @@ class Issue(models.Model):
     added_on = models.DateTimeField(auto_now_add=True)
 
 
+class AuthUser(models.Model):
+    '''
+        Current Purpose : to store one to one mapping of information for each user under django.contrib.auth.User
+
+        
+
+        ATTRIBUTES :
+
+        id(char) - primary key defined for augmenting extra information (is redundant)
+        user(User) - one to one field for linking the extra information to the User
+        title(char) - to store title of the personeg : Mr, Ms, Dr)
+        sex(char) - to store the gender from SEX_CHOICES
+        date_of_birth(DateTime) - Date of birth of user
+        user_status(char) - Defines whether the user is new or is already part of the Institute
+        address(char) - address of the user
+        phone_no(BigInt) - the phone number of the user
+        user_type(char) - type of user (eg : student, staff)
+        department(DepartmentInfo) - to link a user to a department from DepartmentInfo table
+        profile_picture(ImageField) - profile photo of the user
+        about_me(text) - to store extra information of the user
+
+    '''
+    id = models.CharField(max_length=20, primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    title = models.CharField(
+        max_length=20, choices=Constants.TITLE_CHOICES, default='Dr.')
+    sex = models.CharField(
+        max_length=2, choices=Constants.SEX_CHOICES, default='M')
+    date_of_birth = models.DateField(default=datetime.date(1970, 1, 1))
+    user_status = models.CharField(
+        max_length=50, choices=Constants.USER_STATUS, default='PRESENT')
+    address = models.TextField(max_length=1000, default="")
+    phone_no = models.BigIntegerField(null=True, default=9999999999)
+    user_type = models.CharField(max_length=20, choices=Constants.USER_CHOICES)
+    department = models.ForeignKey(
+        DepartmentInfo, on_delete=models.CASCADE, null=True, blank=True)
+    profile_picture = models.ImageField(
+        null=True, blank=True, upload_to='globals/profile_pictures')
+    about_me = models.TextField(default='NA', max_length=1000, blank=True)
+    date_modified = models.DateTimeField('date_updated', blank=True, null=True)
+
 """ End of feedback and bug report models"""
