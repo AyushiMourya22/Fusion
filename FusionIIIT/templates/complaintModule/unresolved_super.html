@@ -51,7 +51,12 @@
                     <td class="two wide column">
                         <b> Details </b>
                     </td>
-
+                    <td class="four wide column">
+                        <b>Delay</b>
+                    </td>
+                    <td>
+                        <b>Change status</b>
+                    </td>
                   
                     <!-- <td class="two large column">
                        <b> Worker <br> Name </b>
@@ -95,7 +100,18 @@
                         <b>NOT ASSIGNED</b>
                     </td> -->
                     <td>
-                        
+                        {{ a.delay.days }} days
+                    </td>
+                    <td>
+                        <div class="field">
+                                <center>
+                                    <a href="./pending/{{ a.id }}/">
+                                    <button class="ui inverted basic button" data-tooltip="Change status">
+                                        <i class="extra large green edit icon"></i>
+                                    </button>
+                                    </a>
+                                </center>
+                            </div>
                     </td>
 </tr>
 
