@@ -28,7 +28,7 @@ urlpatterns = [
     url(r'^caretaker/pending/(?P<cid>[0-9]+)/$', views.resolvepending),
     url(r'^caretaker/detail2/(?P<detailcomp_id1>[0-9]+)/$', views.detail2,name='detail2'),
     url(r'^caretaker/search_complaint$', views.search_complaint),
-    url(r'^caretaker/(?P<complaint_id>[0-9]+)/$', views.submitfeedbackcaretaker),
+    url(r'^caretaker/(?P<complaint_id>[0-9]+)/feedback/$', views.submitfeedbackcaretaker),
     
     
     # supervisor

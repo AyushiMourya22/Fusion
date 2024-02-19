@@ -42,7 +42,7 @@ class Caretaker(models.Model):
     # no_of_comps = models.CharField(max_length=1000)
 
     def __str__(self):
-        return str(self.id) + '-' + self.area
+        return str(self.id) + '-' + str(self.area)
 
 
 class Workers(models.Model):
@@ -85,4 +85,4 @@ class Supervisor(models.Model):
     area = models.CharField(choices=Constants.AREA, max_length=20,default='hall-3')
 
     def __str__(self):
-        return str(self.id) + '-' + self.area
+        return str(self.id) + '-' + str(self.area)

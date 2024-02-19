@@ -14,7 +14,8 @@ from .models import Caretaker, StudentComplain, Supervisor, Workers
 from notification.views import  complaint_system_notif
 
 
-# from applications.filetracking.sdk.methods import *
+from applications.filetracking.sdk.methods import *
+from applications.filetracking.models import *
 
 
 #function for reassign to another worker
@@ -126,34 +127,58 @@ def assign_worker(request, comp_id1):
         a = get_object_or_404(User, username=request.user.username)
         y = ExtraInfo.objects.all().select_related('user','department').filter(user=a).first()
         comp_id = y.id
-        if type == 'assign':
-            complaint_finish = request.POST.get('complaint_finish', '')
-            worker_id = request.POST.get('assign_worker', '')
-            w = Workers.objects.select_related('caretaker_id','caretaker_id__staff_id','caretaker_id__staff_id__user','caretaker_id__staff_id__department').get(id=worker_id)
-            StudentComplain.objects.select_related('complainer','complainer__user','complainer__department','worker_id','worker_id__caretaker_id__staff_id','worker_id__caretaker_id__staff_id__user','worker_id__caretaker_id__staff_id__department').select_for_update().filter(id=comp_id1).\
-                update(worker_id=w, status=1)
-            complainer_details = StudentComplain.objects.select_related('complainer','complainer__user','complainer__department','worker_id','worker_id__caretaker_id__staff_id','worker_id__caretaker_id__staff_id__user','worker_id__caretaker_id__staff_id__department').get(id=comp_id1)
-            student = 0
-            message = "Worker has been assigned to your complaint"
-            complaint_system_notif(request.user, complainer_details.complainer.user ,'assign_worker_alert',complainer_details.id,student,message)
 
-            return HttpResponseRedirect('/complaint/caretaker/')
-        elif type == 'redirect':
-            assign_caretaker = request.POST.get('assign_caretaker', '')
-            c = Caretaker.objects.select_related('staff_id','staff_id__user','staff_id__department').get(id=assign_caretaker)
-            c1 = Caretaker.objects.select_related('staff_id','staff_id__user','staff_id__department').get(id=comp_id)
-            c2=Supervisor.objects.select_related('sup_id','sup_id__user','sup_id__department').filter(area=c1.area)
-            remark = 'Redirect complaint from ' + c1.area
-            StudentComplain.objects.select_for_update().filter(id=comp_id1).\
-                update(location=c.area, remarks=remark)
-            complainer_details = StudentComplain.objects.select_related('complainer','complainer__user','complainer__department','worker_id','worker_id__caretaker_id__staff_id','worker_id__caretaker_id__staff_id__user','worker_id__caretaker_id__staff_id__department').get(id=comp_id1)
-            student=0
-            message = "Your Complaint has been redirected to supervisor"
-            complaint_system_notif(request.user, complainer_details.complainer.user ,'comp_redirect_alert',complainer_details.id,student,message)
-            # return render(request, "complaintModule/assignworker.html",
-            #           {'detail': detail, 'worker': worker, 'flag':
-            #               flag, 'total_caretaker': total_caretaker,'a':a, 'total_caretakers_in_area':total_caretakers_in_area})
-            return HttpResponseRedirect('/complaint/caretaker/')
+        if a.username=="shyams":
+            desgn="hall3caretaker"
+        # if type == 'assign':
+        #     complaint_finish = request.POST.get('complaint_finish', '')
+        #     worker_id = request.POST.get('assign_worker', '')
+        #     w = Workers.objects.select_related('caretaker_id','caretaker_id__staff_id','caretaker_id__staff_id__user','caretaker_id__staff_id__department').get(id=worker_id)
+        #     StudentComplain.objects.select_related('complainer','complainer__user','complainer__department','worker_id','worker_id__caretaker_id__staff_id','worker_id__caretaker_id__staff_id__user','worker_id__caretaker_id__staff_id__department').select_for_update().filter(id=comp_id1).\
+        #         update(worker_id=w, status=1)
+        #     complainer_details = StudentComplain.objects.select_related('complainer','complainer__user','complainer__department','worker_id','worker_id__caretaker_id__staff_id','worker_id__caretaker_id__staff_id__user','worker_id__caretaker_id__staff_id__department').get(id=comp_id1)
+        #     student = 0
+        #     message = "Worker has been assigned to your complaint"
+        #     complaint_system_notif(request.user, complainer_details.complainer.user ,'assign_worker_alert',complainer_details.id,student,message)
+
+        #     return HttpResponseRedirect('/complaint/caretaker/')
+        # elif type == 'redirect':
+        print(comp_id1)
+        print("1234567890")
+        assign_caretaker = request.POST.get('assign_caretaker', '')
+        # c = Caretaker.objects.select_related('staff_id','staff_id__user','staff_id__department').get(id=assign_caretaker)
+        c1 = Caretaker.objects.select_related('staff_id','staff_id__user','staff_id__department').get(staff_id=comp_id)
+        c2=Supervisor.objects.all().filter(area=c1.area)
+        # c3=User.objects.all().filter(id=c2[0].sup_id.id)
+        # print(c3[0])
+        y1 = ExtraInfo.objects.all().select_related('user','department').filter(id=c2[0].sup_id.id).first()
+        print(y1)
+        # b = get_object_or_404(User, id=y1.user.username)
+        # remark = 'Redirect complaint from ' + c1.area
+        # StudentComplain.objects.select_for_update().filter(id=comp_id1).\
+        #     update(location=c.area, remarks=remark)
+        complainer_details = StudentComplain.objects.select_related('complainer','complainer__user','complainer__department','worker_id','worker_id__caretaker_id__staff_id','worker_id__caretaker_id__staff_id__user','worker_id__caretaker_id__staff_id__department').get(id=comp_id1)
+        student=0
+        message = "Your Complaint has been redirected to supervisor"
+        complaint_system_notif(request.user, complainer_details.complainer.user ,'comp_redirect_alert',complainer_details.id,student,message)
+        # return render(request, "complaintModule/assignworker.html",
+        #           {'detail': detail, 'worker': worker, 'flag':
+        #               flag, 'total_caretaker': total_caretaker,'a':a, 'total_caretakers_in_area':total_caretakers_in_area})
+
+        sup = HoldsDesignation.objects.select_related('user','working','designation').get(user = y1.user_id)
+        print(sup.designation)
+        
+        file_id = create_file(uploader=a.username, 
+        uploader_designation=desgn, 
+        receiver=c2[0].sup_id.user,
+        receiver_designation=sup.designation, 
+        src_module="complaint", 
+        src_object_id= str(comp_id1), 
+        file_extra_JSON= {}, 
+        attached_file = None)
+
+
+        return HttpResponseRedirect('/complaint/caretaker/')
     else:
         y = ExtraInfo.objects.all().select_related('user','department').get(id=y.id)
         a = Caretaker.objects.select_related('staff_id','staff_id__user','staff_id__department').get(staff_id=y)
@@ -440,16 +465,19 @@ def user(request):
           dsgn = "rewacaretaker"
         caretaker_name = HoldsDesignation.objects.select_related('user','working','designation').get(designation__name = dsgn)
     
-
-        # file_id = create_file(uploader=user_details.username, 
-        # uploader_designation=obj1.user_type, 
-        # receiver=caretaker_name.user.username,
-        # receiver_designation=caretaker_name.designation, 
-        # src_module="complaint", 
-        # src_object_id= str(obj1.id), 
-        # file_extra_JSON= {}, 
-        # attached_file = None)
+        c1=HoldsDesignation.objects.filter(user_id=y.user_id).all()
+        print(c1[0].designation)
+        file_id = create_file(uploader=user_details.username, 
+        uploader_designation=c1[0].designation, 
+        receiver=caretaker_name.user.username,
+        receiver_designation=caretaker_name.designation, 
+        src_module="complaint", 
+        src_object_id= str(obj1.id), 
+        file_extra_JSON= {}, 
+        attached_file = None)
             
+        # print("  wertyuioiuhygfdsdfghjk")
+        print(file_id)
 
         # This is to allow the student
         student = 1
@@ -462,21 +490,7 @@ def user(request):
 
         messages.success(request,message)
 
-        # file_details_dict = view_file(file_id=file_id)
-
-        # forwarded_file_id = forward_file(
-        #     file_id=file_id,
-        #     receiver=caretaker_name.user.username,
-        #     receiver_designation=caretaker_name.designation,
-        #     file_extra_JSON={"key": "value"},
-        #     remarks="Forwarding to 21BCS078", 
-        #     attached_file=None,
-        #     )
-        # outbox_files = view_outbox(
-        #     username=user_details.username,
-        #     designation=obj1.user_type,
-        #     src_module="complaint"
-        # )
+        
 
         return HttpResponseRedirect('/complaint/user')
 
@@ -487,12 +501,6 @@ def user(request):
         history=[]
         user_details=User.objects.get(id=y.user_id)
 
-        # inbox_files = view_inbox(
-        #     username=user_details.username,
-        #     designation=y.user_type,
-        #     src_module="complaint"
-        # )
-        # print(inbox_files)
 
         notification = Notification.objects.filter(recipient=a.id)
         notification = notification.filter(data__exact={'url':'complaint:detail','module':'Complaint System'})
@@ -504,45 +512,48 @@ def user(request):
         #     notification_message.append(notification.verb+' by '+ to + ' ' + duration + ' ago ')
         
 
-
+        c1=HoldsDesignation.objects.filter(user_id=y.user_id).all()
+        print(c1[0].designation)
+        # c2=Designation.objects.filter(i)
 
         j = 1
         for i in historytemp:
             history.append(i)
-            # if j%2 != 0:
-            #     history.append(i)
-            # j = j+1
+        #     # if j%2 != 0:
+        #     #     history.append(i)
+        #     # j = j+1
 
-        for i in history:
-            i.serial_no = j
-            j = j+1
-
-        # if location == "hall-1":
-        #   dsgn ="hall1caretaker"
-        # elif location =="hall-3":
-        #   dsgn ="hall3caretaker"
-        # elif location =="hall-4":
-        #   dsgn ="hall4caretaker"
-        # elif location =="CC1":
-        #   dsgn ="CC convenor"
-        # elif location =="CC2":
-        #   dsgn ="CC2 convener"
-        # elif location == "core_lab":
-        #   dsgn = "corelabcaretaker"
-        # elif location =="LHTC":
-        #   dsgn ="lhtccaretaker"
-        # elif location =="NR2":
-        #   dsgn ="nr2caretaker"
-        # else:
-        #   dsgn = "rewacaretaker"
-        # caretaker_name = HoldsDesignation.objects.get(designation__name = dsgn)
+         
         
-        # complaint_system_notif(request.user, caretaker_name.user,'lodge_comp_alert')
-        return render(request, "complaintModule/complaint_user.html",
-                      {'history': history,'notification':notification, 'comp_id': y.id})
+        outbox_files = view_outbox(
+            username=user_details.username,
+            designation=c1[0].designation,
+            src_module="complaint"
+        )
 
-    return render(request, "complaintModule/complaint_user.html",
-                      {'history': history, 'comp_id': comp_id })
+        outbox=[]
+        comp_list=set()
+        for i in outbox_files:
+            
+            outbox.append(i)
+
+        for i in outbox:
+            file_history = view_history(file_id=i['id'])
+
+            comp=File.objects.filter(uploader=file_history[0]['current_id'])
+            for j in comp:
+                c=StudentComplain.objects.all().filter(id=j.src_object_id)
+                comp_list.add(c)
+                print(c[0])
+                
+            break    
+        complaint_final_list=[]
+        for i in comp_list:
+            complaint_final_list.append(i[0])
+        return render(request, "complaintModule/complaint_user.html",
+                      {'history': complaint_final_list,'notification':notification, 'comp_id': y.id, 'outbox':outbox})
+
+
 @login_required
 def save_comp(request):
     """
@@ -610,7 +621,7 @@ def caretaker(request):
     """
     current_user = get_object_or_404(User, username=request.user.username)
     y = ExtraInfo.objects.all().select_related('user','department').filter(user=current_user).first()
-
+    
     if request.method == 'POST':
         # type = request.POST.get('submit', '')
         # worker_type = request.POST.get('complaint_type', '')
@@ -654,9 +665,15 @@ def caretaker(request):
         # for h in history:
         #     h.serial_no = k
         #     k=k+1
-        
+        user_details=User.objects.get(id=y.user_id)
+        if user_details.username=="shyams":
+            desgn="hall3caretaker"
+        if user_details.username=="hall4caretaker":
+            desgn="hall4caretaker"
 
         # total_worker = []
+            
+
         # total_workertemp = Workers.objects.select_related('caretaker_id','caretaker_id__staff_id','caretaker_id__staff_id__user','caretaker_id__staff_id__department').filter(caretaker_id=a)
         # j = 1
         # for i in total_workertemp:
@@ -695,17 +712,7 @@ def caretaker(request):
         # y = ExtraInfo.objects.all().select_related('user','department').get(id=comp_id)
         #check if location given
         if location!="":
-            # x = StudentComplain(complainer=y,
-            #                     complaint_type=comp_type,
-            #                     location=location,
-            #                     specific_location=specific_location,
-            #                     details=details,
-            #                     status=status,
-            #                     complaint_finish=complaint_finish,
-            #                     upload_complaint=comp_file)
-            
-            
-            # x.save()
+            user_details=User.objects.get(id=y.user_id)
             obj1, created = StudentComplain.objects.get_or_create(complainer=y,
                                 complaint_type=comp_type,
                                 location=location,
@@ -714,8 +721,7 @@ def caretaker(request):
                                 status=status,
                                 complaint_finish=complaint_finish,
                                 upload_complaint=comp_file)
-
-            
+         
         historytemp = StudentComplain.objects.select_related('complainer','complainer__user','complainer__department','worker_id','worker_id__caretaker_id__staff_id','worker_id__caretaker_id__staff_id__user','worker_id__caretaker_id__staff_id__department').filter(complainer=y).order_by('-id')
         history = []
         j = 1
@@ -761,7 +767,18 @@ def caretaker(request):
         else:
           dsgn = "rewacaretaker"
         caretaker_name = HoldsDesignation.objects.select_related('user','working','designation').get(designation__name = dsgn)
-    
+        print(caretaker_name.user.username)
+        print(user_details.username)
+        print(caretaker_name.designation)
+        file_id = create_file(uploader=user_details.username, 
+        uploader_designation=desgn, 
+        receiver=caretaker_name.user.username,
+        receiver_designation=dsgn, 
+        src_module="complaint", 
+        src_object_id= str(obj1.id), 
+        file_extra_JSON= {}, 
+        attached_file = None)  
+
 
         # This is to allow the student
         student = 1
@@ -791,9 +808,9 @@ def caretaker(request):
 
 
     else:
-        y = ExtraInfo.objects.all().select_related('user','department').get(id=y.id)  
+        # y = ExtraInfo.objects.all().select_related('user','department').get(id=y.id)  
 
-        a = Caretaker.objects.select_related('staff_id','staff_id__user','staff_id__department').get(staff_id=y)
+        a = Caretaker.objects.select_related('staff_id','staff_id__user','staff_id__department').get(staff_id=y.id)
         b = a.area
         history = []
         historytemp = StudentComplain.objects.select_related('complainer','complainer__user','complainer__department','worker_id','worker_id__caretaker_id__staff_id','worker_id__caretaker_id__staff_id__user','worker_id__caretaker_id__staff_id__department').filter(location=b).order_by('-id')
@@ -805,6 +822,11 @@ def caretaker(request):
             
         # complaint_assign_no = []
         complaint_assign_no = []
+        user_details=User.objects.get(id=y.user_id)
+        if user_details.username=="shyams":
+            desgn="hall3caretaker"
+        if user_details.username=="hall4caretaker":
+            desgn="hall4caretaker"
         # a = get_object_or_404(User, username=request.user.username)
         # y = ExtraInfo.objects.all().select_related('user','department').filter(user=a).first()
         carehistorytemp = StudentComplain.objects.select_related('complainer','complainer__user','complainer__department','worker_id','worker_id__caretaker_id__staff_id','worker_id__caretaker_id__staff_id__user','worker_id__caretaker_id__staff_id__department').filter(complainer=y).order_by('-id')
@@ -844,15 +866,87 @@ def caretaker(request):
         
         notification = Notification.objects.filter(recipient=current_user.id)
         notification = notification.filter(data__exact={'url':'complaint:detail2','module':'Complaint System'})
+        user_details=User.objects.get(id=y.user_id)
+        # print(y.user_type)
+        # print(user_details.username)
+        # print(user_details)
         
+        des=HoldsDesignation.objects.filter(user=user_details).all()
+        # print(y.user_id)
+        # print(user_details)
+        # print(des[0].designation)
+        user_object = get_user_object_from_username(y.user.username)
+        user_des=HoldsDesignation.objects.filter(user=user_details).all()
+        # print(user_object)
+        # print(user_des)
+        outbox_files = view_outbox(
+            username=user_details.username,
+            designation=des[0].designation,
+            src_module="complaint"
+        )
 
+        outbox=[]
+        comp_list=set()
+        for i in outbox_files:
+            # print(i)
+            outbox.append(i)
         
+        for i in outbox:
+            file_history = view_history(file_id=i['id'])
+
+            comp=File.objects.filter(uploader=file_history[0]['current_id'])
+            for j in comp:
+                c=StudentComplain.objects.all().filter(id=j.src_object_id)
+                comp_list.add(c)
+                # print(c[0])
+                
+            break    
+        complaint_final_list=[]
+        for i in comp_list:
+            complaint_final_list.append(i[0])
+        print(user_details.username)
+        print(des[0].designation)
+        inbox_files = view_inbox(
+            username=user_details.username,
+            designation=des[0].designation,
+            src_module="complaint"
+        )
+        print(inbox_files)
+
+        inbox=[]
+        comp_list_in=set()
+        for i in inbox_files:
+            # print(i)
+            inbox.append(i)
+        file_history_list=[]
+        for i in inbox:
+            file_history = view_history(file_id=i['id'])
+            # print(file_history[0])
+            file_history_list.append(file_history[0])
+            # print(file_history[0]['file_id'])
+            comp=File.objects.filter(id=file_history[0]['file_id'])
+            print(comp[0].src_object_id)
+            for j in comp:
+                c=StudentComplain.objects.all().filter(id=j.src_object_id)
+                comp_list_in.add(c)
+                # print(c[0])
+                
+            # break    
+        # file_history_list_final=uniqueList(file_history_list)
+        # print(file_history_list)
+        complaint_final_list_in=[]
+        for i in comp_list_in:
+            complaint_final_list_in.append(i[0])
+
+        # print(complaint_final_list_in)
+
         return render(request, "complaintModule/complaint_caretaker.html",
-                      { 'history': history, 
+                      { 'history': complaint_final_list_in, 
                        'comp_id': y.id, 
-                       'carehistory':carehistory,
+                       'carehistory':complaint_final_list,
                         'notification':notification,
-                        'overduecomplaint': overduecomplaint, 'care_id': a})
+                        'overduecomplaint': overduecomplaint, 
+                        'care_id': a})
 
 @login_required
 def remove_worker_from_complaint(request,complaint_id):
@@ -1061,6 +1155,8 @@ def supervisor(request):
             # if j%2 != 0:
             #     all_complaint.append(i)
             # j = j + 1
+        
+    
         overduecomplaint = []
         for i in all_complaint:
             if i.status != 2 and i.status != 3:
@@ -1160,7 +1256,28 @@ def supervisor(request):
         else:
           dsgn = "rewacaretaker"
         caretaker_name = HoldsDesignation.objects.select_related('user','working','designation').get(designation__name = dsgn)
-    
+        user_details=User.objects.get(id=y.user_id)
+        c2=Supervisor.objects.all().filter(area=area)
+        print(caretaker_name.user.username)
+        print(user_details.username)
+        print(caretaker_name.designation)
+
+        # sup = HoldsDesignation.objects.select_related('user','working','designation').get(user = y.id)
+        # print(sup.designation)
+
+        user_details=User.objects.get(id=y.user_id)
+        des=HoldsDesignation.objects.filter(user=user_details).all()
+        
+
+        file_id = create_file(uploader=user_details.username, 
+        uploader_designation=des[0].designation, 
+        receiver=caretaker_name.user.username,
+        receiver_designation=str(caretaker_name.designation), 
+        src_module="complaint", 
+        src_object_id= str(obj1.id), 
+        file_extra_JSON= {}, 
+        attached_file = None)  
+
 
         # This is to allow the student
         student = 1
@@ -1178,7 +1295,7 @@ def supervisor(request):
                     {'all_caretaker': all_caretaker, 'all_complaint': all_complaint,
                    'overduecomplaint': overduecomplaint, 'area': area,'num':num})
     else:
-        y = ExtraInfo.objects.all().select_related('user','department').get(id=y.id)
+        # y = ExtraInfo.objects.all().select_related('user','department').get(id=y.id).fi
         # try:
         #     a = get_object_or_404(Supervisor, sup_id=y)
         # except :
@@ -1188,7 +1305,7 @@ def supervisor(request):
         # if(len(a)==0) :
         #     return render('../dashboard/')
         a = get_object_or_404(User, username=request.user.username)
-        y = ExtraInfo.objects.all().select_related('user','department').filter(user=a).first()
+        # y = ExtraInfo.objects.all().select_related('user','department').filter(user=a).first()
         historytemp = StudentComplain.objects.select_related('complainer','complainer__user','complainer__department','worker_id','worker_id__caretaker_id__staff_id','worker_id__caretaker_id__staff_id__user','worker_id__caretaker_id__staff_id__department').filter(complainer=y).order_by('-id')
         history=[]
         j = 1
@@ -1204,9 +1321,12 @@ def supervisor(request):
         a = Supervisor.objects.select_related('sup_id','sup_id__user','sup_id__department').get(sup_id=y)
         all_caretaker = Caretaker.objects.select_related('staff_id','staff_id__user','staff_id__department').filter(area=a.area).order_by('-id')
         area = all_caretaker[0].area
+        # desgn=HoldsDesignation.objects.select_related('user','working','designation').get(user = y.id)
+        # desgn="hall3supervisor"
         numtemp = StudentComplain.objects.select_related('complainer','complainer__user','complainer__department','worker_id','worker_id__caretaker_id__staff_id','worker_id__caretaker_id__staff_id__user','worker_id__caretaker_id__staff_id__department').filter(location =  area).filter(status = 0).count()
         num = int(numtemp/2+0.5)
         all_complaint = []
+        user_details=User.objects.get(id=y.user_id)
         all_complainttemp = StudentComplain.objects.select_related('complainer','complainer__user','complainer__department','worker_id','worker_id__caretaker_id__staff_id','worker_id__caretaker_id__staff_id__user','worker_id__caretaker_id__staff_id__department').filter(location=a.area).order_by('-id')
         j = 1
         for i in all_complainttemp:
@@ -1221,9 +1341,76 @@ def supervisor(request):
                     i.delay = date.today() - i.complaint_finish
                     overduecomplaint.append(i)
 
+        # print(y.user_id)
+        # print(des[0].designation)
+        # u=ExtraInfo.objects.filter(user=y.user_id).all()
+        # print(u)
+        # des=HoldsDesignation.objects.filter(user=u[0].id).all()
+        # print(des[0].designation.name)
+
+        
+        current_user = get_object_or_404(User, username=request.user.username)
+        y = ExtraInfo.objects.all().select_related('user','department').filter(user=current_user).first()
+        user_details=User.objects.get(id=y.user_id)
+        des=HoldsDesignation.objects.filter(user=user_details).all()
+        print(y.user_id)
+        print(user_details.username)
+        print(des[0].user)
+        outbox_files = view_outbox(
+            username=user_details.username,
+            designation=des[0].designation,
+            src_module="complaint"
+        )
+
+        outbox=[]
+        comp_list=set()
+        for i in outbox_files:
+            # print(i)
+            outbox.append(i)
+
+        for i in outbox:
+            file_history = view_history(file_id=i['id'])
+
+            comp=File.objects.filter(uploader=file_history[0]['current_id'])
+            for j in comp:
+                c=StudentComplain.objects.all().filter(id=j.src_object_id)
+                comp_list.add(c)
+                # print(c[0])
+                
+            break    
+        complaint_final_list=[]
+        for i in comp_list:
+            complaint_final_list.append(i[0])
+
+        inbox_files = view_inbox(
+            username=user_details.username,
+            designation=des[0].designation,
+            src_module="complaint"
+        )
+
+        inbox=[]
+        comp_list_in=set()
+        for i in inbox_files:
+            print(i)
+            inbox.append(i)
+
+        for i in inbox:
+            file_history = view_history(file_id=i['id'])
+
+            comp=File.objects.filter(uploader=file_history[0]['current_id'])
+            for j in comp:
+                c=StudentComplain.objects.all().filter(id=j.src_object_id)
+                comp_list_in.add(c)
+                print(c[0])
+                
+            break    
+        complaint_final_list_in=[]
+        for i in comp_list_in:
+            complaint_final_list_in.append(i[0])
+        print(complaint_final_list_in)
         return render(request, "complaintModule/supervisor1.html",
                       
-                    {'history':history,'all_caretaker': all_caretaker, 'all_complaint': all_complaint,
+                    {'history':complaint_final_list_in,'all_caretaker': all_caretaker, 'all_complaint': all_complaint,'outbox':complaint_final_list,
                    'overduecomplaint': overduecomplaint, 'area': area, 'num' : num})
 
 @login_required
