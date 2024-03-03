@@ -128,8 +128,8 @@ def assign_worker(request, comp_id1):
         y = ExtraInfo.objects.all().select_related('user','department').filter(user=a).first()
         comp_id = y.id
 
-        if a.username=="shyams":
-            desgn="hall3caretaker"
+        # if a.username=="shyams":
+        #     desgn="hall3caretaker"
         # if type == 'assign':
         #     complaint_finish = request.POST.get('complaint_finish', '')
         #     worker_id = request.POST.get('assign_worker', '')
@@ -168,8 +168,10 @@ def assign_worker(request, comp_id1):
         sup = HoldsDesignation.objects.select_related('user','working','designation').get(user = y1.user_id)
         print(sup.designation)
         
+        user_details=User.objects.get(id=y.user_id)
+        des=HoldsDesignation.objects.filter(user=user_details).all()
         file_id = create_file(uploader=a.username, 
-        uploader_designation=desgn, 
+        uploader_designation=des[0].designation, 
         receiver=c2[0].sup_id.user,
         receiver_designation=sup.designation, 
         src_module="complaint", 
@@ -662,14 +664,15 @@ def caretaker(request):
         #     # if j%2 == 1:
         #     #     history.append(i)
         #     # j = j+1
+
         # for h in history:
         #     h.serial_no = k
         #     k=k+1
         user_details=User.objects.get(id=y.user_id)
-        if user_details.username=="shyams":
-            desgn="hall3caretaker"
-        if user_details.username=="hall4caretaker":
-            desgn="hall4caretaker"
+        # if user_details.username=="shyams":
+        #     desgn="hall3caretaker"
+        # if user_details.username=="hall4caretaker":
+        #     desgn="hall4caretaker"
 
         # total_worker = []
             
@@ -770,8 +773,11 @@ def caretaker(request):
         print(caretaker_name.user.username)
         print(user_details.username)
         print(caretaker_name.designation)
+        
+        user_details=User.objects.get(id=y.user_id)
+        des=HoldsDesignation.objects.filter(user=user_details).all()
         file_id = create_file(uploader=user_details.username, 
-        uploader_designation=desgn, 
+        uploader_designation=des[0].designation, 
         receiver=caretaker_name.user.username,
         receiver_designation=dsgn, 
         src_module="complaint", 
@@ -823,10 +829,10 @@ def caretaker(request):
         # complaint_assign_no = []
         complaint_assign_no = []
         user_details=User.objects.get(id=y.user_id)
-        if user_details.username=="shyams":
-            desgn="hall3caretaker"
-        if user_details.username=="hall4caretaker":
-            desgn="hall4caretaker"
+        # if user_details.username=="shyams":
+        #     desgn="hall3caretaker"
+        # if user_details.username=="hall4caretaker":
+        #     desgn="hall4caretaker"
         # a = get_object_or_404(User, username=request.user.username)
         # y = ExtraInfo.objects.all().select_related('user','department').filter(user=a).first()
         carehistorytemp = StudentComplain.objects.select_related('complainer','complainer__user','complainer__department','worker_id','worker_id__caretaker_id__staff_id','worker_id__caretaker_id__staff_id__user','worker_id__caretaker_id__staff_id__department').filter(complainer=y).order_by('-id')
